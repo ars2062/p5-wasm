@@ -1,0 +1,33 @@
+{
+  "name": "p5-wasm",
+  "version": "1.0.0",
+  "description": "a wasm core for p5.js",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ars2062/p5-wasm.git"
+  },
+  "keywords": [
+    "wasm",
+    "p5.js",
+    "canvas"
+  ],
+  "author": "Arshia Moghaddam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ars2062/p5-wasm/issues"
+  },
+  "homepage": "https://github.com/ars2062/p5-wasm#readme",
+  "devDependencies": {
+    "@types/p5": "^1.4.2",
+    "p5": "^1.4.1",
+    "ts-loader": "^9.2.8",
+    "typescript": "^4.6.3",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
+  }
+}
