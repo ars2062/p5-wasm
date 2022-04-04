@@ -23,6 +23,9 @@ exports.default = {
       },
     ],
   },
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
   externals: {
     p5: "p5",
   },
@@ -31,9 +34,7 @@ exports.default = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [
-        { from: "./src/index.html", to: "" },
-      ],
+      patterns: [{ from: "./src/index.html", to: "" }],
     }),
   ],
 };
