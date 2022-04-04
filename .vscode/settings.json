@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "string": "cpp",
+        "cmath": "cpp",
+        "valarray": "cpp",
+        "complex": "cpp",
+        "chrono": "cpp"
+    }
+}
