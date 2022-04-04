@@ -1,7 +1,8 @@
 import p5 from "p5";
 
 // @ts-ignore
-window.oldFunc = p5.prototype._normalizeArcAngles;
+const Module = window.p5wasm
+
 // @ts-ignore
 p5.prototype._normalizeArcAngles = (
     start,
@@ -10,8 +11,6 @@ p5.prototype._normalizeArcAngles = (
     height,
     correctForScaling
 ) => {
-    // @ts-ignore
-    const Module = window.p5wasm
     var data = new Float32Array(3);
     var nDataBytes = data.length * data.BYTES_PER_ELEMENT;
     var dataPtr = Module._malloc(nDataBytes);

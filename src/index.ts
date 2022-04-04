@@ -17,4 +17,5 @@ window.wasmReady = p5({
 
     // core
     require('./core/shape/2d_primitives.ts');
+    require('./core/shape/curves.ts');
 });

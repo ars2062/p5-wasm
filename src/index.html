@@ -49,8 +49,8 @@
         };
         // console.log(window.wasmReady);
         window.wasmReady.then(() => {
-            bench(window.oldFunc, 10000, [1, 10, 100, 100, true], globalThis)
-            bench(p5.prototype._normalizeArcAngles, 10000, [1, 10, 100, 100, true], globalThis)
+            bench(window.oldFunc, 100000, [85, 10, 90, 15, 10], globalThis)
+            bench(p5.prototype.curveTangent, 100000, [85, 10, 90, 15, 10], globalThis)
         }).catch((e) => {
             console.log('error ===> ', e);
         })
