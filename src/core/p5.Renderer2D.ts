@@ -1,9 +1,6 @@
 import p5 from "p5";
 import { createFloatArrayHEAP, getFloatArrayFromHEAP } from "../wasmUtils/array";
 
-//@ts-ignore
-window.oldFunc = p5.Renderer2D.prototype._acuteArcToBezier;
-
 // @ts-ignore
 const Module = window.p5wasm
 

@@ -19,4 +19,6 @@ window.wasmReady = p5({
     require('./core/shape/2d_primitives.ts');
     require('./core/shape/curves.ts');
     require('./core/p5.Renderer2D.ts');
+    // math
+    require('./math/calculation.ts')
 });

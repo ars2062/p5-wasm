@@ -11,6 +11,21 @@ export function createFloatArrayHEAP(length: number) {
     return { dataHeap, data, free: () => Module._free(dataHeap.byteOffset) }
 }
 
-export function getFloatArrayFromHEAP(dataHeap:Uint8Array,data:Float32Array){
-    return  new Float32Array(dataHeap.buffer, dataHeap.byteOffset, data.length);
+export function getFloatArrayFromHEAP(dataHeap: Uint8Array, data: Float32Array) {
+    return new Float32Array(dataHeap.buffer, dataHeap.byteOffset, data.length);
+}
+
+export function transferToHeap(arr) {
+    const floatArray = toFloatArr(arr);
+    const heapSpace = Module._malloc(floatArray.length *
+        floatArray.BYTES_PER_ELEMENT); 
+    Module.HEAPF32.set(floatArray, heapSpace >> 2);     
+    return heapSpace;
+}
+export function toFloatArr(arr) {
+    const res = new Float32Array(arr.length);
+    for (let i = 0; i < arr.length; i++)
+        res[i] = arr[i];
+    return res;
+
 }

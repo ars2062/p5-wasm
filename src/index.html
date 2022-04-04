@@ -49,8 +49,8 @@
         };
         // console.log(window.wasmReady);
         window.wasmReady.then(() => {
-            bench(window.oldFunc, 10000, [10, 110], globalThis)
-            bench(p5.Renderer2D.prototype._acuteArcToBezier, 10000, [10, 110], globalThis)
+            bench(window.oldFunc, 100000, [10, 110, 20, 500,20, 500], globalThis)
+            bench(p5.prototype.dist, 100000, [10, 110, 20, 500,20, 500], globalThis)
         }).catch((e) => {
             console.log('error ===> ', e);
         })
