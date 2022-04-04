@@ -1,11 +1,20 @@
-import p5, { Vector } from "p5";
 
-const oldAdd = p5.Vector.prototype.add;
+import p5 from './p5'
+// @ts-ignore
+import p5Module from './p5.wasm'
 
-function add(x: number | Vector | number[], y?: number, z?: number): Vector {
-  console.log("halloo", x);
-  if (typeof x === "object") return oldAdd(x);
-  else return oldAdd(x, y, z);
-}
+// @ts-ignore
+window.wasmReady = p5({
+    locateFile(path) {
+        if (path.endsWith('.wasm')) {
+            return p5Module;
+        }
+        return path;
+    }
+}).then(instance => {
+    // @ts-ignore
+    window.p5wasm = instance;
 
-p5.Vector.prototype.add = add;
+    // core
+    require('./core/shape/2d_primitives.ts');
+});
