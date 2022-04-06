@@ -49,9 +49,12 @@
         };
         // console.log(window.wasmReady);
         window.wasmReady.then(() => {
-            bench(window.oldFunc, 100000, [100], globalThis)
-            bench(window.oldFunc, 100000, [100], globalThis)
-            bench(p5.prototype.sq, 100000, [100], globalThis)
+            alert(
+                bench(window.oldFunc, 100000, [100,100], globalThis) + '\n' +
+                bench(window.oldFunc, 100000, [100,100], globalThis) + '\n' +
+                bench(p5.prototype.noise, 100000, [100,100], globalThis) + '\n' +
+                bench(p5.prototype.noise, 100000, [100,100], globalThis)
+            )
         }).catch((e) => {
             console.log('error ===> ', e);
         })

@@ -21,4 +21,5 @@ window.wasmReady = p5({
     require('./core/p5.Renderer2D.ts');
     // math
     require('./math/calculation.ts')
+    require('./math/noise.ts')
 });
