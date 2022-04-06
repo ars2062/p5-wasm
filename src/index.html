@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.min.js"></script>
     <script src="/p5.wasm.js"></script>
     <script>
         var bench = function (method, iterations, args, context) {
@@ -49,8 +49,9 @@
         };
         // console.log(window.wasmReady);
         window.wasmReady.then(() => {
-            bench(window.oldFunc, 100000, [10, 110, 20, 500,20, 500], globalThis)
-            bench(p5.prototype.dist, 100000, [10, 110, 20, 500,20, 500], globalThis)
+            bench(window.oldFunc, 100000, [100], globalThis)
+            bench(window.oldFunc, 100000, [100], globalThis)
+            bench(p5.prototype.sq, 100000, [100], globalThis)
         }).catch((e) => {
             console.log('error ===> ', e);
         })
