@@ -3,8 +3,7 @@ import p5 from './p5'
 // @ts-ignore
 import p5Module from './p5.wasm'
 
-// @ts-ignore
-window.wasmReady = p5({
+const promise = p5({
     locateFile(path) {
         if (path.endsWith('.wasm')) {
             return p5Module;
@@ -23,3 +22,8 @@ window.wasmReady = p5({
     require('./math/calculation.ts')
     require('./math/noise.ts')
 });
+if (typeof window !== 'undefined')
+    // @ts-ignore
+    window.wasmReady = promise
+
+export default promise

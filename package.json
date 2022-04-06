@@ -2,9 +2,10 @@
   "name": "p5-wasm",
   "version": "0.0.1",
   "description": "a wasm core for p5.js",
-  "main": "index.js",
+  "main": "./dist/node.js",
   "scripts": {
     "dev": "nodemon",
+    "build:prod": "make && webpack --mode production",
     "build": "make && webpack",
     "start": "yarn build && http-server dist"
   },
@@ -22,9 +23,13 @@
   "bugs": {
     "url": "https://github.com/ars2062/p5-wasm/issues"
   },
+  "files": [
+    "dist"
+  ],
   "homepage": "https://github.com/ars2062/p5-wasm#readme",
   "devDependencies": {
     "@types/p5": "^1.4.2",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.4",
     "exports-loader": "^3.1.0",
     "file-loader": "^6.2.0",
