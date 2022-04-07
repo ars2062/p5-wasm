@@ -1,5 +1,5 @@
 {
   "watch": ["src"],
   "ext": "ts,cpp,html",
-  "exec": "yarn start"
+  "exec": "yarn build --mode development && yarn serve"
 }

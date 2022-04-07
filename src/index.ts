@@ -15,12 +15,13 @@ const promise = p5({
     window.p5wasm = instance;
 
     // core
-    require('./core/shape/2d_primitives.ts');
-    require('./core/shape/curves.ts');
-    require('./core/p5.Renderer2D.ts');
+    require('./core/shape/2d_primitives');
+    require('./core/shape/curves');
+    require('./core/p5.Renderer2D');
     // math
-    require('./math/calculation.ts')
-    require('./math/noise.ts')
+    require('./math/calculation')
+    require('./math/noise')
+    require('./math/random')
 });
 if (typeof window !== 'undefined')
     // @ts-ignore
