@@ -22,6 +22,7 @@ const promise = p5({
     require('./math/calculation')
     require('./math/noise')
     require('./math/random')
+    require('./math/trigonometry')
 });
 if (typeof window !== 'undefined')
     // @ts-ignore
