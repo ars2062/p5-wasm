@@ -5,3 +5,4 @@ dist
 *.log
 src/p5.js
 src/p5.wasm
+.env
