@@ -1,8 +1,5 @@
 import p5 from "p5";
 
-//@ts-ignore
-window.oldFunc = p5.prototype._cacos;
-
 // @ts-ignore
 const Module = window.p5wasm
 
