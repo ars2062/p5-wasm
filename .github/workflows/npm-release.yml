@@ -8,6 +8,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 14.18.2
+      - uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: 3.1.7
+      - name: Verify
+        run: emcc -v
       - run: npm install
       - run: npm run build
       - uses: JS-DevTools/npm-publish@v1
