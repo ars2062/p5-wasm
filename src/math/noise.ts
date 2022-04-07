@@ -1,6 +1,5 @@
 import p5 from "p5";
 
-// @ts-ignore
 const Module = window.p5wasm
 
 p5.prototype.noise = function (x, y = 0, z = 0) {

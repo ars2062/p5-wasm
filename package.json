@@ -5,9 +5,8 @@
   "main": "./dist/node.js",
   "scripts": {
     "dev": "nodemon",
-    "build:prod": "make && webpack --mode production",
     "build": "make && webpack",
-    "start": "yarn build && yarn serve",
+    "start": "npm run build && npm run serve",
     "serve": "http-server dist"
   },
   "repository": {
@@ -15,6 +14,7 @@
     "url": "git+https://github.com/ars2062/p5-wasm.git"
   },
   "keywords": [
+    "webassembly",
     "wasm",
     "p5.js",
     "canvas"
@@ -30,10 +30,7 @@
   "homepage": "https://github.com/ars2062/p5-wasm#readme",
   "devDependencies": {
     "@types/p5": "^1.4.2",
-    "clean-webpack-plugin": "^4.0.0",
-    "copy-webpack-plugin": "^10.2.4",
-    "exports-loader": "^3.1.0",
-    "file-loader": "^6.2.0",
+    "dotenv": "^16.0.0",
     "http-server": "^14.1.0",
     "nodemon": "^2.0.15",
     "p5": "1.4.1",

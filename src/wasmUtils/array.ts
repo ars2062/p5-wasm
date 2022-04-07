@@ -1,5 +1,4 @@
 
-// @ts-ignore
 const Module = window.p5wasm
 
 export function createFloatArrayHEAP(length: number) {

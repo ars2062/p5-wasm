@@ -1,7 +1,6 @@
 import p5 from "p5";
 import { createFloatArrayHEAP, getFloatArrayFromHEAP } from "../../wasmUtils/array";
 
-// @ts-ignore
 const Module = window.p5wasm
 
 // @ts-ignore

@@ -1,6 +1,5 @@
 
 import p5 from './p5'
-// @ts-ignore
 import p5Module from './p5.wasm'
 
 const promise = p5({
@@ -11,13 +10,10 @@ const promise = p5({
         return path;
     }
 }).then(instance => {
-    // @ts-ignore
     window.p5wasm = instance;
 
     // accessibility
     require('./accessibility/color_namer')
-
-    // color
 
     // core
     require('./core/shape/2d_primitives');
@@ -31,7 +27,6 @@ const promise = p5({
     require('./math/trigonometry')
 });
 if (typeof window !== 'undefined')
-    // @ts-ignore
     window.wasmReady = promise
 
 export default promise

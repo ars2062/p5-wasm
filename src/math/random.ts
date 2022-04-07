@@ -1,6 +1,5 @@
 import p5 from "p5";
 
-// @ts-ignore
 const Module = window.p5wasm
 
 // @ts-ignore
