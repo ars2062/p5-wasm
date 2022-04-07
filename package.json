@@ -1,6 +1,6 @@
 {
   "name": "p5-wasm-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a wasm core for p5.js",
   "main": "./dist/p5.wasm.js",
   "scripts": {
