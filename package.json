@@ -1,8 +1,8 @@
 {
-  "name": "p5-wasm",
+  "name": "p5-wasm-core",
   "version": "0.0.1",
   "description": "a wasm core for p5.js",
-  "main": "./dist/node.js",
+  "main": "./dist/p5.wasm.js",
   "scripts": {
     "dev": "nodemon",
     "build": "make && webpack",
