@@ -1,4 +1,4 @@
-on: release
+on: [release, workflow_dispatch]
 
 jobs:
   publish:
