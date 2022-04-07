@@ -90,6 +90,7 @@
         "stop_token": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "barrier": "cpp"
     }
 }

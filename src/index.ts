@@ -14,10 +14,16 @@ const promise = p5({
     // @ts-ignore
     window.p5wasm = instance;
 
+    // accessibility
+    require('./accessibility/color_namer')
+
+    // color
+
     // core
     require('./core/shape/2d_primitives');
     require('./core/shape/curves');
     require('./core/p5.Renderer2D');
+
     // math
     require('./math/calculation')
     require('./math/noise')
