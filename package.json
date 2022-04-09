@@ -1,6 +1,6 @@
 {
   "name": "p5-wasm-core",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "a wasm core for p5.js",
   "main": "./dist/p5.wasm.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "build": "make && webpack",
     "start": "npm run build && npm run serve",
     "serve": "http-server dist",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release": "standard-version"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "husky": "^7.0.4",
     "nodemon": "^2.0.15",
     "p5": "1.4.1",
+    "standard-version": "^9.3.2",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
     "webpack": "^5.70.0",
