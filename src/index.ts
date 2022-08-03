@@ -27,6 +27,7 @@ const promise = p5({
     require('./math/noise')
     require('./math/random')
     require('./math/trigonometry')
+    require('./math/vector')
 });
 if (typeof window !== 'undefined')
     window.wasmReady = promise
