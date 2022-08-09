@@ -3,6 +3,15 @@ import { createFloatArrayHEAP, getFloatArrayFromHEAP } from "../../wasmUtils/arr
 
 const Module = window.p5wasm
 
+/**
+ * @benchmark
+ * @name _normalizeArcAngles
+ * @argument {number} [start=100]
+ * @argument {number} [stop=100]
+ * @argument {number} [width=100]
+ * @argument {number} [height=100]
+ * @argument {boolean} [correctForScaling=true]
+ */
 // @ts-ignore
 p5.prototype._normalizeArcAngles = (
     start,
