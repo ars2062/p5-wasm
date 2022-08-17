@@ -1,6 +1,7 @@
-/** @type {import('webpack').Configuration} */
 const path = require("path");
 require('dotenv').config()
+
+/** @type {import('webpack').Configuration} */
 exports.default = {
   entry: "./src/index.ts",
   output: {

@@ -5,8 +5,6 @@ export function nameFromPath(p: string) {
     return p.replace(/\//g, '0').replace('.ts', '').replace('src/', '')
 }
 
-
-
 function parseValue(val, argType) {
     switch (argType) {
         case 'string':

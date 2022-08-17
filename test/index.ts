@@ -1,8 +1,10 @@
-import benchmark, { Suite } from 'benchmark';
 import chokidar, { FSWatcher } from 'chokidar'
 import fs from 'fs'
 import { debounce, getFunctionsFromPath, nameFromPath } from './helpers';
-
+import { Configuration, webpack, ContextReplacementPlugin } from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
+import path from 'path';
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 export type TSuit = {
     functions: {
         name: string,
@@ -19,34 +21,61 @@ export type TSuit = {
     }
 }
 
+const webpackConfig: Configuration = {
+    entry: path.resolve(__dirname, 'client.ts'),
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'test.[contenthash:4].js',
+        // clean: true
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            hash: true,
+            // inject: false,
+            template: path.resolve(__dirname, 'index.html'),
+            filename: path.resolve(__dirname, 'dist/index.html')
+        }),
+        // new ContextReplacementPlugin(/\/benchmark\//, (data) => {
+        //     delete data.dependencies[0].critical;
+        //     return data;
+        // })
+    ],
+    resolve: {
+        extensions: ['.json', '.ts', '.js']
+    },
+    devServer: {
+        port: process.env.PORT || 8000,
+        host: process.env.HOST || '0.0.0.0',
+        hot: true
+    },
+    module: {
+        exprContextCritical: false,
+    },
+    mode: 'development'
+}
+
+const compiler = webpack(webpackConfig)
+compiler.watch({
+    aggregateTimeout: 300,
+    poll: undefined
+}, (err, stats) => { });
+
+const server = new WebpackDevServer(webpackConfig.devServer, compiler);
+server.start()
+if (!compiler.running)
+    compiler.run((err, res) => {
+        if (err) console.error(err)
+        else {
+            console.log(path.resolve(__dirname, 'index.html'));
+            console.log('client test updated');
+
+        }
+    })
+
 let testSuits: Record<string, TSuit> = {}
 
-const test = debounce(function() {
-    // console.log(testSuits);
-    let i = 0
-    fs.writeFileSync('./test/sketch.js', `
-        const oldP5 = Object.assign(function(){},p5)
-        const main = document.querySelector('main');
-        function log(txt){
-            main.append(txt, document.createElement('br'))
-        }
-        window.wasmReady.then(() => {
-        ${Object.entries(testSuits).map(([fileName, suit]) => 
-        suit.functions.map((func) => `
-                const suite${++i} = new Benchmark.Suite;
-                suite${i}.add('P5 => ${fileName} => ${func.name}', function() {
-                    oldP5.prototype.${func.name}(${func.arguments.map(arg => JSON.stringify(arg.value)).join(', ')})
-                }).add('P5Wasm => ${fileName} => ${func.name}', function() {
-                    p5.prototype.${func.name}(${func.arguments.map(arg => JSON.stringify(arg.value)).join(', ')})
-                }).on('complete', function() {
-                    console.log(this)
-                    log('Fastest is ' + this.filter('fastest').map('name'));
-                }).run({ 'async': true });
-            `).join('\n')
-    ).join('\n')
-        }
-        });
-    `)
+const writeSuits = debounce(function () {
+    fs.writeFileSync('./test/test.json', JSON.stringify(testSuits))
 }, 300, false)
 
 function handlerFileChange(path, state: 'ADD' | 'CHANGE' | 'UNLINK') {
@@ -60,7 +89,7 @@ function handlerFileChange(path, state: 'ADD' | 'CHANGE' | 'UNLINK') {
             functions: getFunctionsFromPath(path)
         }
     }
-    test()
+    writeSuits()
 }
 
 let watcher: FSWatcher
