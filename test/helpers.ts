@@ -1,4 +1,3 @@
-import { TSuit } from ".";
 import fs from 'fs'
 
 export function nameFromPath(p: string) {
@@ -60,3 +59,18 @@ export function debounce(func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 };
+export type TSuit = {
+    functions: {
+        name: string,
+        arguments: {
+            name: string,
+            type: string,
+            value: any
+        }[]
+    }[],
+    result?: {
+        name: string,
+        oldFunction: string,
+        newFunction: string
+    }
+}

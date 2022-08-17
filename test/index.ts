@@ -1,55 +1,46 @@
 import chokidar, { FSWatcher } from 'chokidar'
 import fs from 'fs'
-import { debounce, getFunctionsFromPath, nameFromPath } from './helpers';
+import { debounce, getFunctionsFromPath, nameFromPath, TSuit } from './helpers';
 import { Configuration, webpack, ContextReplacementPlugin } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import path from 'path';
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-export type TSuit = {
-    functions: {
-        name: string,
-        arguments: {
-            name: string,
-            type: string,
-            value: any
-        }[]
-    }[],
-    result?: {
-        name: string,
-        oldFunction: string,
-        newFunction: string
-    }
-}
 
 const webpackConfig: Configuration = {
     entry: path.resolve(__dirname, 'client.ts'),
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'test.[contenthash:4].js',
-        // clean: true
+        clean: true
     },
     plugins: [
         new HtmlWebpackPlugin({
             hash: true,
-            // inject: false,
             template: path.resolve(__dirname, 'index.html'),
             filename: path.resolve(__dirname, 'dist/index.html')
         }),
-        // new ContextReplacementPlugin(/\/benchmark\//, (data) => {
-        //     delete data.dependencies[0].critical;
-        //     return data;
-        // })
     ],
     resolve: {
         extensions: ['.json', '.ts', '.js']
     },
     devServer: {
-        port: process.env.PORT || 8000,
-        host: process.env.HOST || '0.0.0.0',
-        hot: true
+        port: process.env.PORT,
+        host: process.env.HOST,
+        hot: true,
+        open: true
     },
     module: {
         exprContextCritical: false,
+        noParse: [
+            /benchmark/,
+        ],
+        rules: [
+            {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+        ],
     },
     mode: 'development'
 }
@@ -68,7 +59,6 @@ if (!compiler.running)
         else {
             console.log(path.resolve(__dirname, 'index.html'));
             console.log('client test updated');
-
         }
     })
 
