@@ -11,6 +11,8 @@ const promise = p5({
     }
 }).then(instance => {
     window.p5wasm = instance;
+    //@ts-ignore
+    window.oldP5 = Object.clone(p5)
 
     // accessibility
     require('./accessibility/color_namer')
