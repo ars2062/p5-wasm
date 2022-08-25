@@ -3,6 +3,7 @@ import fs from 'fs'
 import { debounce, getFunctionsFromPath, nameFromPath, TSuit } from './helpers';
 import { Configuration, webpack, ContextReplacementPlugin } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import path from 'path';
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -19,6 +20,14 @@ const webpackConfig: Configuration = {
             template: path.resolve(__dirname, 'index.html'),
             filename: path.resolve(__dirname, 'dist/index.html')
         }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, "../dist"),
+                    to: path.resolve(__dirname, "dist")
+                }
+            ]
+        })
     ],
     resolve: {
         extensions: ['.json', '.ts', '.js']
@@ -27,7 +36,10 @@ const webpackConfig: Configuration = {
         port: process.env.PORT,
         host: process.env.HOST,
         hot: true,
-        open: true
+        open: true,
+        static: {
+            directory: path.resolve(__dirname, 'dist')
+        }
     },
     module: {
         exprContextCritical: false,
@@ -40,7 +52,14 @@ const webpackConfig: Configuration = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.scss$/,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
+            }
         ],
+    },
+    experiments: {
+        asyncWebAssembly: true
     },
     mode: 'development'
 }
@@ -48,7 +67,8 @@ const webpackConfig: Configuration = {
 const compiler = webpack(webpackConfig)
 compiler.watch({
     aggregateTimeout: 300,
-    poll: undefined
+    poll: true,
+    ignored: /node_modules/
 }, (err, stats) => { });
 
 const server = new WebpackDevServer(webpackConfig.devServer, compiler);

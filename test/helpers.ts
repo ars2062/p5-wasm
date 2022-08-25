@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 export function nameFromPath(p: string) {
-    return p.replace(/\//g, '0').replace('.ts', '').replace('src/', '')
+    return p.replace(/\//g, '-').replace('.ts', '').replace('src/', '')
 }
 
 function parseValue(val, argType) {
@@ -12,14 +12,18 @@ function parseValue(val, argType) {
             return Number(val)
         case 'boolean':
             return val === 'true';
+        case 'object':
+            console.log(JSON.parse(val));
+            
+            return JSON.parse(val)
     }
 }
 
 
 
-const functionRegex = /\/\**\n \* @benchmark\n \* @name \w+(\n \* @argument [{\w} \[=\]]+)*\n \*\//gm
-const argumentsRegex = /@argument {(\w+)} \[(\w+)=(\w+)\]/g
-const nameRegex = /@name ([\w\.]+)/
+const functionRegex = /\/\**\n \* @benchmark\n \* @name [\w\._]+(\n \* @argument [{\w} \[=\],":]+)*\n \*\//gm
+const argumentsRegex = /@argument {(\w+)} \[(\w+)=([\[\]\w,":]+)\]/g
+const nameRegex = /@name ([\w\._]+)/
 export function getFunctionsFromPath(p: string): TSuit['functions'] {
     const txt = fs.readFileSync(p, {
         encoding: 'utf-8',
