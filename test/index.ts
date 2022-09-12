@@ -5,6 +5,32 @@ import { Configuration, webpack, ContextReplacementPlugin } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import path from 'path';
+import http from 'http'
+import { connection, server as WebsocketServer } from 'websocket';
+const httpServer = http.createServer(function (request, response) {
+    console.log((new Date()) + ' Received request for ' + request.url);
+    response.writeHead(404);
+    response.end();
+});
+httpServer.listen(9001, function () {
+    console.log((new Date()) + ' Server is listening on port 9001');
+});
+
+const wsServer = new WebsocketServer({
+    httpServer,
+    autoAcceptConnections: false
+});
+const connections: connection[] = []
+wsServer.on('request', function (request) {
+    const connection = request.accept('echo-protocol', request.origin);
+    connections.push(connection)
+    console.log((new Date()) + ' Connection accepted.');
+    sendSuits(testSuits)
+    connection.on('close', function (reasonCode, description) {
+        connections.splice(connections.findIndex(i => i === connection), 1)
+        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+    });
+});
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const webpackConfig: Configuration = {
@@ -84,8 +110,11 @@ if (!compiler.running)
 
 let testSuits: Record<string, TSuit> = {}
 
-const writeSuits = debounce(function () {
-    fs.writeFileSync('./test/test.json', JSON.stringify(testSuits))
+
+const sendSuits = debounce(function (suits: Record<string, TSuit>) {
+    connections.forEach((connection) => {
+        connection.sendUTF(JSON.stringify(suits))
+    })
 }, 300, false)
 
 function handlerFileChange(path, state: 'ADD' | 'CHANGE' | 'UNLINK') {
@@ -96,10 +125,11 @@ function handlerFileChange(path, state: 'ADD' | 'CHANGE' | 'UNLINK') {
         delete testSuits[nameFromPath(path)]
     } else {
         testSuits[nameFromPath(path)] = {
-            functions: getFunctionsFromPath(path)
+            functions: getFunctionsFromPath(path),
+            lastUpdate: Number(new Date())
         }
     }
-    writeSuits()
+    sendSuits(testSuits)
 }
 
 let watcher: FSWatcher
@@ -127,5 +157,6 @@ async function startWatching() {
             handlerFileChange(path, 'UNLINK')
         });
 }
+
 
 startWatching()

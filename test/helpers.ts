@@ -14,7 +14,7 @@ function parseValue(val, argType) {
             return val === 'true';
         case 'object':
             console.log(JSON.parse(val));
-            
+
             return JSON.parse(val)
     }
 }
@@ -49,19 +49,19 @@ export function getFunctionsFromPath(p: string): TSuit['functions'] {
     return [];
 }
 
-export function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
+export function debounce(func: Function, wait, immediate) {
+    var timeout;
+    return function (...args) {
+        var context = this;
+        var later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    } as typeof func;
 };
 export type TSuit = {
     functions: {
@@ -72,6 +72,7 @@ export type TSuit = {
             value: any
         }[]
     }[],
+    lastUpdate: number
     result?: {
         name: string,
         oldFunction: string,

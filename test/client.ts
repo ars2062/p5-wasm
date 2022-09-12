@@ -1,25 +1,12 @@
 require('lodash')
 import './index.scss'
-import p5 from 'p5'
 import Benchmark from 'benchmark'
-import suites from './test.json'
+import { TSuit } from './helpers';
 // @ts-ignore
 window.Benchmark = Benchmark;
-// @ts-ignore
-window.p5 = p5
-type TSuit = {
-    functions: {
-        name: string,
-        arguments: {
-            name: string,
-            type: string,
-            value: any
-        }[]
-    }[],
-    result?: {
-        name: string,
-        oldFunction: string,
-        newFunction: string
+declare global {
+    interface Window {
+        p5: any
     }
 }
 
@@ -45,7 +32,7 @@ function calcOverallResult() {
 
     const oldValue = [...document.querySelectorAll<HTMLElement>(`.suit__progress__old`)].reduce((sum, i) => sum + Number(i.dataset.value || 0), 0)
     const wasmValue = [...document.querySelectorAll<HTMLElement>(`.suit__progress__wasm`)].reduce((sum, i) => sum + Number(i.dataset.value || 0), 0)
-    
+
     const sum = oldValue + wasmValue
     const oldProgress = oldValue / sum * 100
     const wasmProgress = wasmValue / sum * 100
@@ -89,13 +76,12 @@ function createResultObject<T>(): TResult<T> {
     return Object
 }
 
-const entries: Array<[string, TSuit]> = Object.entries(suites)
 type ValueOf<T> = T[keyof T];
 type TNamespace = keyof ValueOf<typeof res>
 type TResult<T> = Record<string, { old?: T, wasm?: T }>
 const res = createResultObject<Promise<Benchmark>>()
 
-function test(namespace: TNamespace) {
+function test(namespace: TNamespace, entries: Array<[string, TSuit]>) {
     for (let i = 0; i < entries.length; i++) {
         const [name, suite] = entries[i];
         for (let j = 0; j < suite.functions.length; j++) {
@@ -104,7 +90,7 @@ function test(namespace: TNamespace) {
             if (!res[testName]) res[testName] = {}
             res[testName][namespace] = new Promise<Benchmark>((resolve, reject) => {
                 const benchmark = new Benchmark(function () {
-                    p5.prototype[func.name](...func.arguments.map(k => k.value))
+                    window.p5.prototype[func.name](...func.arguments.map(k => k.value))
                 }, {
                     async: true,
                     name: testName,
@@ -126,8 +112,8 @@ function test(namespace: TNamespace) {
 }
 
 const resolved = createResultObject<Benchmark>()
-function resolveTest(namespace: TNamespace) {
-    test(namespace)
+function resolveTest(namespace: TNamespace, entries) {
+    test(namespace, entries)
     return Promise.all(Object.entries(res)
         .map(i => i[1][namespace]))
         .then((benchmarks) => {
@@ -139,6 +125,14 @@ function resolveTest(namespace: TNamespace) {
         }).catch(e => {
             console.error(e);
         })
+}
+
+function removeWasm() {
+    document.querySelector('script[src="/p5.wasm.js"]')?.remove()
+    delete require.cache['p5']
+    window.p5 = require('p5/lib/p5')
+    console.log(window.p5);
+    
 }
 
 function loadWasm() {
@@ -159,9 +153,11 @@ function log(text) {
     `)
     log.scrollTop = log.scrollHeight - log.clientHeight
 }
-(async function () {
+async function testSuits(suits: Record<string, TSuit>) {
+    const entries = Object.entries(suits)
+    await removeWasm()
     log('p5 resolving');
-    await resolveTest('old')
+    await resolveTest('old', entries)
     log('p5 resolved');
     log('wasm loading');
     await loadWasm()
@@ -170,6 +166,25 @@ function log(text) {
     await window.wasmReady
     log('wasm ready');
     log('wasm resolving');
-    await resolveTest('wasm')
+    await resolveTest('wasm', entries)
     log('wasm resolved');
-})()
+}
+const client = new WebSocket('ws://localhost:9001/', 'echo-protocol')
+
+const testPromises: Array<Promise<void>> = []
+const updates: Record<string, number> = {}
+client.onmessage = async (ev) => {
+    if (testPromises.length) await testPromises
+    let suits = JSON.parse(ev.data) as Record<string, TSuit>
+    suits = Object.fromEntries(Object.entries(suits).filter(([name, suit]) => {
+        if (updates[name] !== suit.lastUpdate) {
+            updates[name] = suit.lastUpdate
+            return true
+        }
+        return false
+    }))
+    console.log(suits);
+
+
+    testPromises.push(testSuits(suits));
+}
