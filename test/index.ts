@@ -126,7 +126,6 @@ function handlerFileChange(path, state: 'ADD' | 'CHANGE' | 'UNLINK') {
     } else {
         testSuits[nameFromPath(path)] = {
             functions: getFunctionsFromPath(path),
-            lastUpdate: Number(new Date())
         }
     }
     sendSuits(testSuits)

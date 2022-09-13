@@ -558,11 +558,130 @@ public:
         return new vector(vx, vy, vz);
     }
 
+    static vector *add(vector v1, vector v2, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v1.copy();
+        }
+        else
+        {
+            target->set(v1);
+        }
+        target->add(v2);
+        return target;
+    }
+
     static vector *rem(vector v1, vector v2)
     {
         auto target = v1.copy();
         target->rem(v2);
         return target;
+    }
+
+    static vector *sub(vector v1, vector v2, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v1.copy();
+        }
+        else
+        {
+            target->set(v1);
+        }
+        target->sub(v2);
+        return target;
+    }
+
+    static vector *mult(vector v1, vector v2, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v1.copy();
+        }
+        else
+        {
+            target->set(v1);
+        }
+        target->mult(v2);
+        return target;
+    }
+
+    static vector *rotate(vector v, float a, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v.copy();
+        }
+        else
+        {
+            target->set(v);
+        }
+        target->rotate(a);
+        return target;
+    }
+
+    static vector *div(vector v, float n, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v.copy();
+        }
+        else
+        {
+            target->set(v);
+        }
+        target->div(n);
+        return target;
+    }
+
+    static float dot(vector v1, vector v2)
+    {
+        return v1.dot(v2);
+    }
+
+    static vector *cross(vector v1, vector v2)
+    {
+        return v1.cross(v2);
+    }
+
+    static float dist(vector v1, vector v2)
+    {
+        return v1.dist(v2);
+    }
+
+    static vector *lerp(vector v1, vector v2, float amt, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v1.copy();
+        }
+        else
+        {
+            target->set(v1);
+        }
+        target->lerp(v2, amt);
+        return target;
+    }
+
+    static float mag(vector vecT)
+    {
+        auto x = vecT.x, y = vecT.y, z = vecT.z;
+        auto magSq = x * x + y * y + z * z;
+        return sqrt(magSq);
+    }
+
+    static vector *normalize(vector v, vector *target = nullptr)
+    {
+        if (!target)
+        {
+            target = v.copy();
+        }
+        else
+        {
+            target->set(v);
+        }
+        return target->normalize(v);
     }
 };
 
@@ -570,6 +689,9 @@ EMSCRIPTEN_BINDINGS(vector_class)
 {
     class_<vector>("vector")
         .constructor<float, float, float>()
+        .property("x", &vector::x)
+        .property("y", &vector::y)
+        .property("z", &vector::z)
         .function("toString", &vector::toString)
         .function("set_vector", select_overload<vector *(vector)>(&vector::set), allow_raw_pointers())
         .function("set_array", select_overload<vector *(const val &)>(&vector::set), allow_raw_pointers())
@@ -596,29 +718,39 @@ EMSCRIPTEN_BINDINGS(vector_class)
         .function("div_float_float", select_overload<vector *(float, float)>(&vector::div), allow_raw_pointers())
         .function("div_float_float_float", select_overload<vector *(float, float, float)>(&vector::div), allow_raw_pointers())
         .function("magSq", &vector::magSq)
-        .function("mag", &vector::mag)
-        .function("dot_vector", select_overload<float(vector)>(vector::dot))
-        .function("dot_float_float_float", select_overload<float(float, float, float)>(vector::dot))
-        .function("cross", &vector::cross, allow_raw_pointers())
-        .function("dist", &vector::dist)
-        .function("normalize", &vector::normalize, allow_raw_pointers())
+        .function("mag", select_overload<float()>(&vector::mag))
+        .function("dot_vector", select_overload<float(vector)>(&vector::dot))
+        .function("dot_float_float_float", select_overload<float(float, float, float)>(&vector::dot))
+        .function("cross", select_overload<vector *(vector)>(&vector::cross), allow_raw_pointers())
+        .function("dist", select_overload<float(vector)>(&vector::dist))
+        .function("normalize", select_overload<vector *()>(&vector::normalize), allow_raw_pointers())
         .function("limit", &vector::limit, allow_raw_pointers())
         .function("setMag", &vector::setMag, allow_raw_pointers())
         .function("heading", &vector::heading)
         .function("setHeading", &vector::setHeading, allow_raw_pointers())
-        .function("rotate", &vector::rotate, allow_raw_pointers())
+        .function("rotate", select_overload<vector *(float)>(&vector::rotate), allow_raw_pointers())
         .function("angleBetween", &vector::angleBetween)
         .function("lerp_vector_float", select_overload<vector *(vector, float)>(&vector::lerp), allow_raw_pointers())
-        .function("lerp_float_float_float_float", select_overload<vector *(float,float,float,float)>(&vector::lerp), allow_raw_pointers())
+        .function("lerp_float_float_float_float", select_overload<vector *(float, float, float, float)>(&vector::lerp), allow_raw_pointers())
         .function("reflect", &vector::reflect, allow_raw_pointers())
         .function("array", &vector::array)
         .function("equals_vector", select_overload<bool(vector)>(&vector::equals))
         .function("equals_array", select_overload<bool(const val &)>(&vector::equals))
-        .function("equals_float_float_float", select_overload<bool(float,float,float)>(&vector::equals))
-        .class_function("fromAngle_float_float", select_overload<vector *(float, float)>(vector::fromAngle), allow_raw_pointers())
-        .class_function("fromAngle_float_float_float", select_overload<vector *(float, float, float)>(vector::fromAngle), allow_raw_pointers())
+        .function("equals_float_float_float", select_overload<bool(float, float, float)>(&vector::equals))
+        .class_function("fromAngle", &vector::fromAngle, allow_raw_pointers())
+        .class_function("fromAngles", &vector::fromAngles, allow_raw_pointers())
         .class_function("random2D", &vector::random2D, allow_raw_pointers())
         .class_function("random3D", &vector::random3D, allow_raw_pointers())
+        .class_function("add", &vector::add, allow_raw_pointers())
         .class_function("rem", &vector::rem, allow_raw_pointers())
-
+        .class_function("sub", &vector::sub, allow_raw_pointers())
+        .class_function("mult", &vector::mult, allow_raw_pointers())
+        .class_function("rotate", &vector::rotate, allow_raw_pointers())
+        .class_function("div", &vector::div, allow_raw_pointers())
+        .class_function("dot", &vector::dot, allow_raw_pointers())
+        .class_function("cross", &vector::cross, allow_raw_pointers())
+        .class_function("dist", &vector::dist, allow_raw_pointers())
+        .class_function("lerp", &vector::lerp, allow_raw_pointers())
+        .class_function("mag", &vector::mag, allow_raw_pointers())
+        .class_function("normalize", &vector::normalize, allow_raw_pointers());
 }

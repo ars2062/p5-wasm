@@ -1,5 +1,5 @@
 import fs from 'fs'
-
+import { createHash } from 'crypto'
 export function nameFromPath(p: string) {
     return p.replace(/\//g, '-').replace('.ts', '').replace('src/', '')
 }
@@ -21,8 +21,8 @@ function parseValue(val, argType) {
 
 
 
-const functionRegex = /\/\**\n \* @benchmark\n \* @name [\w\._]+(\n \* @argument [{\w} \[=\],":]+)*\n \*\//gm
-const argumentsRegex = /@argument {(\w+)} \[(\w+)=([\[\]\w,":]+)\]/g
+const functionRegex = /\/\**\n \* @benchmark\n \* @name [\w\._]+(\n \* @argument [{\w} \[=\],":\.]+)*\n \*\//gm
+const argumentsRegex = /@argument {(\w+)} \[(\w+)=([\[\]\w,":\.]+)\]/g
 const nameRegex = /@name ([\w\._]+)/
 export function getFunctionsFromPath(p: string): TSuit['functions'] {
     const txt = fs.readFileSync(p, {
@@ -37,6 +37,7 @@ export function getFunctionsFromPath(p: string): TSuit['functions'] {
             const argumentsMatch = Array.from(i.matchAll(argumentsRegex))
             return {
                 name: nameMatch ? nameMatch[1] : '',
+                hash: createHash('sha1').update(i).digest('hex'),
                 arguments: argumentsMatch.map(j => ({
                     name: j[2],
                     type: j[1],
@@ -66,13 +67,13 @@ export function debounce(func: Function, wait, immediate) {
 export type TSuit = {
     functions: {
         name: string,
+        hash: string,
         arguments: {
             name: string,
             type: string,
             value: any
         }[]
     }[],
-    lastUpdate: number
     result?: {
         name: string,
         oldFunction: string,

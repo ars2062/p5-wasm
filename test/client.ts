@@ -16,7 +16,7 @@ function onFunctionAdd(name) {
     if (document.getElementById(name)) return;
     main?.insertAdjacentHTML('beforeend', `
         <div class="suit" id="${name}">
-            <h2>${name}</h2>
+            <h2 class="suit__title">${name}</h2>
             <div class="suit__progress">
                 <div class="suit__progress__old"></div>
                 <div class="suit__progress__wasm"></div>
@@ -45,24 +45,30 @@ function calcOverallResult() {
 
 function onSuitCycle(name, namespace: TNamespace, bench: Benchmark) {
     const progresses = {
-        old: document.querySelector(`#${name} .suit__progress .suit__progress__old`) as HTMLElement,
-        wasm: document.querySelector(`#${name} .suit__progress .suit__progress__wasm`) as HTMLElement
+        old: document.getElementById(name)?.querySelector('.suit__progress .suit__progress__old') as HTMLElement,
+        wasm: document.getElementById(name)?.querySelector('.suit__progress .suit__progress__wasm') as HTMLElement
     }
     const value = bench.stats.mean + bench.stats.moe;
-    progresses[namespace].dataset.value = value.toString()
+    try {
 
-    const oldValue = Number(progresses.old.dataset.value || 0)
-    const wasmValue = Number(progresses.wasm.dataset.value || 0)
+        progresses[namespace].dataset.value = value.toString()
 
-    const sum = oldValue + wasmValue
-    const oldProgress = oldValue / sum * 100
-    const wasmProgress = wasmValue / sum * 100
+        const oldValue = Number(progresses.old.dataset.value || 0)
+        const wasmValue = Number(progresses.wasm.dataset.value || 0)
 
-    progresses.old.style.flexBasis = `${oldProgress}%`
-    progresses.old.innerHTML = `${oldProgress.toFixed(2)}%`
-    progresses.wasm.style.flexBasis = `${wasmProgress}%`
-    progresses.wasm.innerHTML = `${wasmProgress.toFixed(2)}%`
-    calcOverallResult()
+        const sum = oldValue + wasmValue
+        const oldProgress = oldValue / sum * 100
+        const wasmProgress = wasmValue / sum * 100
+
+        progresses.old.style.flexBasis = `${oldProgress}%`
+        progresses.old.innerHTML = `${oldProgress.toFixed(2)}%`
+        progresses.wasm.style.flexBasis = `${wasmProgress}%`
+        progresses.wasm.innerHTML = `${wasmProgress.toFixed(2)}%`
+        calcOverallResult()
+    } catch (e) {
+        console.error(e);
+        console.log(name, namespace);
+    }
 }
 
 function createResultObject<T>(): TResult<T> {
@@ -129,10 +135,11 @@ function resolveTest(namespace: TNamespace, entries) {
 
 function removeWasm() {
     document.querySelector('script[src="/p5.wasm.js"]')?.remove()
-    delete require.cache['p5']
-    window.p5 = require('p5/lib/p5')
+    const name = require.resolve('p5')
+    delete require.cache[name]
+    window.p5 = require('p5')
     console.log(window.p5);
-    
+
 }
 
 function loadWasm() {
@@ -172,17 +179,21 @@ async function testSuits(suits: Record<string, TSuit>) {
 const client = new WebSocket('ws://localhost:9001/', 'echo-protocol')
 
 const testPromises: Array<Promise<void>> = []
-const updates: Record<string, number> = {}
+const updates: Record<string, string> = {}
+globalThis.updates = updates
 client.onmessage = async (ev) => {
     if (testPromises.length) await testPromises
     let suits = JSON.parse(ev.data) as Record<string, TSuit>
-    suits = Object.fromEntries(Object.entries(suits).filter(([name, suit]) => {
-        if (updates[name] !== suit.lastUpdate) {
-            updates[name] = suit.lastUpdate
-            return true
-        }
-        return false
-    }))
+    suits = Object.fromEntries(Object.entries(suits).map(([name, suit]) => {
+        suit.functions = suit.functions.filter((func) => {
+            if (updates[`${name}-${func.name}`] !== func.hash) {
+                updates[`${name}-${func.name}`] = func.hash
+                return true
+            }
+            return false
+        })
+        return [name, suit]
+    }).filter(([name, suit]) => !!(suit as TSuit).functions.length))
     console.log(suits);
 
 
